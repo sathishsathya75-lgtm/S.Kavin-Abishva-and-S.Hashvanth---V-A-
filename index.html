@@ -1,4 +1,269 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"><title>Eclipse AR Explorer</title><script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script><script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script><style>body{margin:0;font-family:system-ui,Arial;background:#08152c;color:white}#controls{position:fixed;z-index:20;left:10px;right:10px;bottom:15px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap}button{border:2px solid #fff7;border-radius:24px;padding:13px 16px;font-weight:800;color:white;background:#1767be;font-size:15px}button.active{background:#ed8a16}#intro{position:fixed;top:10px;left:10px;right:10px;z-index:20;background:#06142bdc;padding:12px;border-radius:12px;text-align:center;font-size:14px}#status{display:block;color:#fbd276;font-weight:700;margin-top:4px}a{color:#9ee6ff}</style><script>
-AFRAME.registerComponent('eclipse-demo',{init:function(){this.mode='solar';this.phase=0;this.moon=this.el.querySelector('#moon');this.earth=this.el.querySelector('#earth');this.shadow=this.el.querySelector('#shadow');this.moonLabel=this.el.querySelector('#moonlabel');},tick:function(t,dt){if(!this.moon)return;this.phase+=Math.min(dt||0,100)*.00035;let x=this.mode==='solar'?-0.32:0.32;let y=.12*Math.sin(this.phase);this.moon.setAttribute('position',`${x} ${y} 0`);this.moonLabel.setAttribute('position',`${x} ${y+.18} 0`);this.shadow.setAttribute('visible',Math.abs(y)<.055);this.shadow.setAttribute('position',this.mode==='solar'?'0 0 0':'0.48 0 0');},setMode:function(mode){this.mode=mode;this.phase=0;}});
-function choose(mode){let e=document.querySelector('#system');if(e&&e.components['eclipse-demo'])e.components['eclipse-demo'].setMode(mode);document.querySelectorAll('button').forEach(b=>b.classList.toggle('active',b.dataset.mode===mode));document.querySelector('#status').textContent=mode==='solar'?'SOLAR: Moon between Sun and Earth':'LUNAR: Earth between Sun and Moon';}
-</script></head><body><div id="intro"><strong>🌞 ECLIPSE AR EXPLORER 🌙</strong><span id="status">SOLAR: Moon between Sun and Earth</span>Allow camera access, then point at the printed HIRO marker. This is a simplified 3D demonstration, not a scale model.</div><div id="controls"><button data-mode="solar" class="active" onclick="choose('solar')">☀️ Solar eclipse</button><button data-mode="lunar" onclick="choose('lunar')">🌕 Lunar eclipse</button></div><a-scene embedded vr-mode-ui="enabled:false" renderer="logarithmicDepthBuffer:true;antialias:true" arjs="sourceType:webcam;debugUIEnabled:false;trackingMethod:best;" device-orientation-permission-ui="enabled:false"><a-marker preset="hiro" emitevents="true"><a-entity id="system" eclipse-demo position="0 0.25 0" rotation="-90 0 0" scale="1 1 1"><a-sphere position="-0.67 0 0" radius="0.19" material="color:#ffae00;emissive:#ff9100;emissiveIntensity:1"></a-sphere><a-light type="point" color="#ffefc2" intensity="2" position="-0.67 0 .2"></a-light><a-sphere id="earth" position="0 0 0" radius="0.145" material="color:#1685dc;roughness:0.9"></a-sphere><a-sphere position="0 .02 .105" radius="0.065" material="color:#42b86b;roughness:1"></a-sphere><a-sphere id="moon" position="-.32 0 0" radius="0.072" material="color:#bbbcc7;roughness:1"></a-sphere><a-sphere id="shadow" position="0 0 0" radius="0.045" material="color:#0a1023;opacity:.7;transparent:true" visible="true"></a-sphere><a-text value="SUN" color="white" align="center" width="1.2" position="-.67 -.32 0"></a-text><a-text value="EARTH" color="white" align="center" width="1.2" position="0 -.32 0"></a-text><a-text id="moonlabel" value="MOON" color="white" align="center" width="1.1" position="-.32 .18 0"></a-text><a-ring radius-inner=".31" radius-outer=".315" material="color:#69d3f9;opacity:.6;transparent:true;side:double" rotation="0 0 0"></a-ring></a-entity></a-marker><a-entity camera></a-entity></a-scene></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#081321">
+<meta name="description" content="Explore solar and lunar eclipses using NASA Earth and Moon imagery. Camera AR with the Hiro marker, or interactive 3D preview.">
+<title>Eclipse AR | Realistic surface edition</title>
+<style>
+:root{color-scheme:dark;--bg:#081321;--card:rgba(8,19,33,.92);--line:rgba(171,201,222,.25);--ink:#f2f6fb;--muted:#adc1d6;--gold:#ffcf76;--blue:#78d9f4;--pink:#d5a7ff}
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:transparent;color:var(--ink)}body.preview-mode,body.landing-mode{background:#081321}button,a,input{-webkit-tap-highlight-color:transparent}button{font:inherit;cursor:pointer;border:1px solid var(--line);background:rgba(21,40,58,.92);color:var(--ink);border-radius:12px;padding:11px 14px;font-weight:650;touch-action:manipulation;min-height:44px}button:hover{background:#223e55}button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid var(--gold);outline-offset:3px}button:disabled{opacity:.5;cursor:wait}button.active,button[aria-pressed=true]{background:#254c66;border-color:var(--blue)}button.primary{background:var(--blue);color:#061522;border-color:transparent}button.secondary{background:#192d42}button.solar.active{border-color:var(--gold);background:#544322}button.lunar.active{border-color:var(--pink);background:#42314d}a{color:var(--blue)}[hidden]{display:none!important}.eyebrow{font-size:11px;letter-spacing:.18em;font-weight:750;color:var(--blue)}.muted{color:var(--muted)}
+#launch{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;padding:22px;background:radial-gradient(ellipse at 30% 12%,#163344 0,transparent 58%),radial-gradient(ellipse at 90% 75%,#24223d 0,transparent 55%),#081321;overflow:auto}
+.launch-card{width:min(590px,100%);padding:32px;border:1px solid var(--line);border-radius:25px;background:rgba(7,15,25,.92);box-shadow:0 25px 100px #0005}.launch-card h1{font-size:clamp(30px,6vw,48px);line-height:1.04;letter-spacing:-.045em;margin:16px 0}.launch-card p{font-size:16px;line-height:1.6;color:var(--muted)}.mini-orbit{height:67px;display:flex;align-items:center;gap:24px;margin:22px 0}.mini-orbit .sun{width:58px;height:58px;box-shadow:0 0 28px #ffb33077;background:radial-gradient(circle at 40% 35%,#ffeaae,#ffb249 57%,#b75516);border-radius:50%}.mini-orbit .earth{width:38px;height:38px;border-radius:50%;background:radial-gradient(circle at 35% 25%,#84d8e0,#1269a4 52%,#050f1e);box-shadow:0 0 10px #88dfff50}.mini-orbit .moon{width:18px;height:18px;border-radius:50%;background:radial-gradient(circle at 35% 25%,#eee4d7,#716e6a 58%,#1b1a18)}.mini-orbit .connector{width:40px;height:1px;background:var(--line)}.launch-actions{display:grid;grid-template-columns:1.2fr 1fr;gap:10px;margin-top:24px}.launch-note{font-size:12px!important;line-height:1.5!important;margin-bottom:0}.credits{font-size:12px;line-height:1.6;margin-top:22px;color:#bdcbd9;border-top:1px solid var(--line);padding-top:18px}.load-msg{margin-top:14px;font-size:13px;color:var(--gold);min-height:19px;line-height:1.4}
+#scene-host{position:fixed;inset:0;z-index:1;pointer-events:none}a-scene{position:absolute!important;inset:0!important;width:100%!important;height:100%!important}a-scene canvas{position:absolute!important;inset:0;outline:none}video{z-index:0!important}#gesture-pad{position:fixed;inset:0;z-index:3;touch-action:none;cursor:grab}#gesture-pad:active{cursor:grabbing}
+#hud{position:fixed;top:max(10px,env(safe-area-inset-top));left:max(10px,env(safe-area-inset-left));right:max(10px,env(safe-area-inset-right));z-index:10;pointer-events:none}.hud-line{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}.title-card{max-width:min(78%,470px);padding:11px 14px;border:1px solid var(--line);border-radius:16px;background:var(--card);backdrop-filter:blur(10px)}.title-card strong{font-size:18px;display:block;letter-spacing:-.02em;margin-top:2px}#tracking{font-size:12px;margin-top:5px;color:var(--gold);line-height:1.3}#tracking.ok{color:#a4edc0}.hud-buttons{pointer-events:auto;display:flex;gap:7px}.hud-buttons button{padding:9px 12px;background:var(--card)}#texture-status{font-size:11px;margin:7px 3px;color:#d7e6f6;text-shadow:0 1px 3px black}
+#dock{position:fixed;bottom:max(9px,env(safe-area-inset-bottom));left:10px;right:10px;z-index:10;max-width:800px;margin:auto;background:var(--card);border:1px solid var(--line);border-radius:20px;padding:12px 13px;backdrop-filter:blur(12px)}.mode-row,.tools-row,.focus-row{display:flex;gap:7px;align-items:center;justify-content:center;flex-wrap:wrap}.mode-row{display:grid;grid-template-columns:1fr 1fr}.mode-row button{padding:10px}#caption{font-size:13px;color:#dfe9f6;text-align:center;line-height:1.45;min-height:36px;margin:8px 0 7px}.tools-row button{padding:8px 12px;font-size:13px;min-height:40px}.small-caption{font-size:11px;color:var(--muted);text-align:center;line-height:1.4;margin-top:7px}.focus-row{margin-top:8px}.focus-row button{padding:6px 10px;min-height:33px;font-size:12px}.focus-row span{font-size:11px;color:var(--muted)}#orbit-control{display:flex;align-items:center;gap:10px;margin:8px 0 2px;font-size:11px;color:var(--muted)}#orbit{width:100%;accent-color:var(--blue);min-height:20px;touch-action:pan-x}#zoom-readout{font-size:11px;min-width:35px;text-align:center;color:var(--blue)}
+#notice{position:fixed;z-index:50;left:15px;right:15px;top:35%;margin:auto;max-width:450px;border-radius:15px;padding:15px;background:#11263ef2;border:1px solid var(--gold);font-size:14px;line-height:1.5;pointer-events:none;text-align:center}
+#info{position:fixed;inset:0;z-index:150;background:#0009;display:flex;align-items:center;justify-content:center;padding:16px}.info-panel{max-width:620px;max-height:90dvh;overflow:auto;background:#0d1c2d;border:1px solid #33556e;border-radius:20px;padding:24px;width:100%}.info-top{display:flex;align-items:center;justify-content:space-between;gap:12px}.info-panel h2{margin:0;font-size:24px}.info-panel h3{font-size:16px;margin:22px 0 7px;color:var(--blue)}.info-panel p,.info-panel li{font-size:14px;line-height:1.6;color:#c9d9e8}.info-panel ul{padding-left:20px}.info-panel img{display:block;width:160px;max-width:100%;background:white;margin:12px auto}.info-panel label{font-size:13px;display:block;margin:10px 0}.info-panel input[type=file]{max-width:100%;font-size:12px}.toggle{display:flex!important;align-items:center;gap:9px}.toggle input{width:20px;height:20px;accent-color:var(--blue)}.warn{border-left:3px solid var(--gold);padding-left:12px}.version{font:12px ui-monospace,monospace;color:var(--muted);margin-top:20px}
+@media(max-width:500px){.launch-card{padding:23px}.launch-card p{font-size:14px}.launch-actions{grid-template-columns:1fr}.launch-actions button{padding:13px}.mini-orbit{margin:16px 0}.title-card strong{font-size:15px}.title-card{padding:9px 11px}.eyebrow{font-size:9px}.hud-buttons button{font-size:12px;padding:7px 10px}#dock{padding:10px;border-radius:17px}.tools-row{gap:5px}.tools-row button{font-size:12px;padding:8px 10px}.small-caption{font-size:10px}#caption{font-size:12px}.focus-row button{font-size:11px}.credits{font-size:11px}}
+@media(max-height:560px){#dock{max-width:720px;padding:7px 10px}.mode-row{width:50%;margin:0 auto}#caption{min-height:0;margin:3px;font-size:11px}#orbit-control,.small-caption{display:none}.focus-row{margin-top:4px}.title-card{padding:7px}.launch-card{padding:18px}.mini-orbit{display:none}.launch-card p{font-size:13px}.launch-card h1{font-size:27px;margin:8px 0}.launch-actions{margin-top:10px}.credits{margin-top:10px;padding-top:10px}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto}}
+</style>
+</head>
+<body class="landing-mode">
+<div id="launch">
+ <section class="launch-card" aria-labelledby="app-title">
+  <span class="eyebrow">PROJECT DAY / REALISTIC SURFACE EDITION</span>
+  <h1 id="app-title">Space, on<br>your table.</h1>
+  <p>Explore the Sun, Earth and Moon. See detailed surface maps, control the orbit and discover both eclipses.</p>
+  <div class="mini-orbit" aria-hidden="true"><div class="sun"></div><div class="connector"></div><div class="earth"></div><div class="moon"></div></div>
+  <div class="launch-actions"><button id="start-ar" class="primary">Start camera AR</button><button id="start-preview" class="secondary">Explore in 3D first</button></div>
+  <div id="load-msg" class="load-msg" role="status">Internet is needed to load the renderer and surface maps.</div>
+  <p class="launch-note">Camera AR needs your printed Hiro marker. This is a 3D learning model, not a live view from space. No camera frames are uploaded by this app.</p>
+  <div class="credits">S. KAVIN ABISHVA &amp; S. HASHVANTH<br>V STD &amp; A SECTION <span class="muted">&middot; Solar &amp; Lunar Eclipses</span></div>
+ </section>
+</div>
+<div id="scene-host"></div><div id="gesture-pad" hidden aria-label="Drag to rotate. Pinch or use zoom buttons to enlarge the model."></div>
+<header id="hud" hidden>
+ <div class="hud-line"><div class="title-card"><span class="eyebrow">ECLIPSE EXPLORER / REALISTIC</span><strong id="view-title">Solar &amp; lunar eclipses</strong><div id="tracking" role="status">Starting...</div></div><div class="hud-buttons"><button id="view-switch">Camera</button><button id="info-open" aria-label="Open instructions and image credits">Info</button></div></div>
+ <div id="texture-status" role="status">Loading detailed textures...</div>
+</header>
+<section id="dock" hidden aria-label="Eclipse controls">
+ <div class="mode-row"><button class="solar active" id="solar" aria-pressed="true">Solar eclipse</button><button class="lunar" id="lunar" aria-pressed="false">Lunar eclipse</button></div>
+ <p id="caption" aria-live="polite">Moon between Sun and Earth: look for the Moon's shadow on Earth.</p>
+ <div class="tools-row"><button id="play" aria-pressed="false">Play orbit</button><button id="zoom-out" aria-label="Zoom out">&minus;</button><span id="zoom-readout">1.0&times;</span><button id="zoom-in" aria-label="Zoom in">+</button><button id="reset">Reset view</button></div>
+ <label id="orbit-control" for="orbit"><span>MOON</span><input type="range" id="orbit" min="0" max="360" step="1" value="180" aria-label="Moon position in orbit"><span>ORBIT</span></label>
+ <div class="focus-row"><span>LOOK CLOSER</span><button id="focus-all" class="active" aria-pressed="true">All</button><button id="focus-earth" aria-pressed="false">Earth</button><button id="focus-moon" aria-pressed="false">Moon</button><button id="focus-sun" aria-pressed="false">Sun</button></div>
+ <div class="small-caption">Drag to rotate &middot; Pinch to zoom &middot; Sizes and distances are not to scale</div>
+</section>
+<div id="notice" hidden role="status"></div>
+<div id="info" hidden role="dialog" aria-modal="true" aria-labelledby="info-title"><div class="info-panel">
+ <div class="info-top"><h2 id="info-title">How to explore</h2><button id="info-close" aria-label="Close instructions">Close</button></div>
+ <p>Open the same website from your existing QR. Choose <b>Start camera AR</b>, allow camera access and aim at the <b>whole Hiro marker</b>. Use a printed marker or show it on another screen.</p>
+ <p><a href="https://raw.githubusercontent.com/AR-js-org/AR.js/3.4.8/data/images/hiro.png" target="_blank" rel="noopener">Open the official Hiro marker</a></p>
+ <p>One finger rotates the model. Two fingers zoom. Solar and Lunar set the correct alignments. Play moves the Moon; the slider lets you position it yourself. Look closer isolates a body so its surface is easy to inspect.</p>
+ <label class="toggle"><input type="checkbox" id="show-labels" checked> Show body labels and orbit line</label>
+ <label class="toggle"><input type="checkbox" id="show-red" checked> Show illustrative red-light effect during lunar eclipse</label>
+ <h3>What is real imagery?</h3>
+ <p><b>Earth:</b> NASA Blue Marble satellite-based global surface mosaic. <b>Moon:</b> NASA LRO / CGI Moon Kit color map. These are texture maps wrapped onto 3D spheres, not live feeds. The texture status tells you which source actually loaded.</p>
+ <p><b>Sun:</b> Solar System Scope's artistic solar texture, with a simulated glow. Its orange color and apparent surface motion are visual illustrations, not live solar observations.</p>
+ <h3>Scientific limits</h3>
+ <p class="warn">Sizes, distances and orbital speed are simplified so all three bodies fit above a table. The orbit is kept level to demonstrate alignments; the real Moon's tilted orbit means eclipses do not happen every month. Close-up mode lights a body for inspection and hides the other bodies; return to All to see eclipse shadows.</p>
+ <p>In All view, shadow darkness is calculated from how much of the displayed Sun is hidden by the other sphere. The Moon's red tint is a teaching effect, not a calculation of Earth's atmosphere. In a real total lunar eclipse, sunlight filtered and bent by Earth's atmosphere can make the Moon look reddish.</p>
+ <p><b>Camera privacy:</b> marker tracking happens on your device. This page does not record or upload camera images. Its libraries and surface images are downloaded from their hosting sites.</p>
+ <h3>Sources and acknowledgements</h3>
+ <ul>
+  <li><a href="https://svs.gsfc.nasa.gov/2915/" target="_blank" rel="noopener">Earth: NASA / Goddard SVS, Blue Marble</a></li>
+  <li><a href="https://svs.gsfc.nasa.gov/4720/" target="_blank" rel="noopener">Moon: NASA / Goddard SVS, CGI Moon Kit; LRO, LROC and LOLA teams</a></li>
+  <li><a href="https://www.solarsystemscope.com/textures/" target="_blank" rel="noopener">Sun and fallback texture maps: Solar System Scope, CC BY 4.0</a></li>
+  <li><a href="https://github.com/mrdoob/three.js/tree/r160/examples/textures/planets" target="_blank" rel="noopener">Three.js Earth and Moon texture mirrors (fallbacks)</a>; <a href="https://github.com/PatwinchIR/Solar-System-Unity3D/tree/master/Assets/Materials" target="_blank" rel="noopener">Solar texture mirror</a></li>
+  <li><a href="https://science.nasa.gov/moon/eclipses/" target="_blank" rel="noopener">NASA: eclipses and the Moon</a></li>
+  <li><a href="https://ar-js-org.github.io/AR.js-Docs/" target="_blank" rel="noopener">AR.js 3.4.8</a> and <a href="https://aframe.io/" target="_blank" rel="noopener">A-Frame 1.6.0</a> (MIT)</li>
+ </ul>
+ <h3>When a texture fails to load</h3>
+ <p>Check the internet connection and press Retry. A school network may block an image host. You can also load a saved equirectangular map below. The included optional downloader makes a local assets folder for hosting these files yourself.</p>
+ <button id="retry-textures">Retry surface maps</button>
+ <label>Earth map <input id="import-earth" type="file" accept="image/*"></label>
+ <label>Moon map <input id="import-moon" type="file" accept="image/*"></label>
+ <label>Sun map <input id="import-sun" type="file" accept="image/*"></label>
+ <p><b>Safety:</b> keep the camera pointed at your marker, not the real Sun.</p>
+ <div class="version">Realistic Eclipse AR / v3.0 / 12 October 2026</div>
+</div></div>
+<script>
+'use strict';
+/* All dependencies are version-pinned. Optional local files are tried first. */
+const VERSION='3.0';
+const LIBRARIES={
+ aframe:['vendor/aframe-1.6.0.min.js','https://aframe.io/releases/1.6.0/aframe.min.js','https://cdn.jsdelivr.net/npm/aframe@1.6.0/dist/aframe-master.min.js'],
+ arjs:['vendor/aframe-ar-3.4.8.js','https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.4.8/aframe/build/aframe-ar.js','https://raw.githack.com/AR-js-org/AR.js/3.4.8/aframe/build/aframe-ar.js']
+};
+const SOURCES={
+ earth:[
+  ['assets/earth.png','Local Earth map'],
+  ['https://svs.gsfc.nasa.gov/vis/a000000/a002900/a002915/bluemarble-2048.png','NASA Blue Marble'],
+  ['https://cdn.jsdelivr.net/gh/mrdoob/three.js@r160/examples/textures/planets/earth_atmos_2048.jpg','Blue Marble / Three.js mirror'],
+  ['https://raw.githubusercontent.com/mrdoob/three.js/r160/examples/textures/planets/earth_atmos_2048.jpg','Blue Marble / Three.js mirror'],
+  ['https://www.solarsystemscope.com/textures/download/2k_earth_daymap.jpg','Solar System Scope Earth (fallback)']
+ ],
+ moon:[
+  ['assets/moon.jpg','Local Moon map'],
+  ['https://svs.gsfc.nasa.gov/vis/a000000/a004700/a004720/lroc_color_2k.jpg','NASA LRO / CGI Moon Kit'],
+  ['https://svs.gsfc.nasa.gov/vis/a000000/a004700/a004720/lroc_color_poles_1k.jpg','NASA LRO / CGI Moon Kit 2019'],
+  ['https://raw.githubusercontent.com/mrdoob/three.js/r160/examples/textures/planets/moon_1024.jpg','Three.js Moon map (fallback)'],
+  ['https://www.solarsystemscope.com/textures/download/2k_moon.jpg','Solar System Scope Moon (fallback)']
+ ],
+ sun:[
+  ['assets/sun.jpg','Local Sun illustration'],
+  ['https://www.solarsystemscope.com/textures/download/2k_sun.jpg','Solar System Scope (artistic Sun)'],
+  ['https://raw.githubusercontent.com/PatwinchIR/Solar-System-Unity3D/master/Assets/Materials/2k_sun.jpg','Solar System Scope / GitHub mirror']
+ ]
+};
+const $=id=>document.getElementById(id);
+const state={ar:false,scene:null,component:null,started:false,booting:false,mode:'solar',phase:Math.PI,playing:false,focus:'all',zoom:1,yaw:.24,pitch:0,labels:true,red:true,found:false,texture:{earth:'waiting',moon:'waiting',sun:'waiting'},textureLabel:{},lastStatus:0};
+let aframeReady=null,arReady=null,noticeTimer=null;
+function clamp(n,a,b){return Math.max(a,Math.min(b,n));}
+function normalizeAngle(a){return (a%(Math.PI*2)+Math.PI*2)%(Math.PI*2);}
+function setText(id,s){$(id).textContent=s;}
+function showNotice(s,ms=5500){setText('notice',s);$('notice').hidden=false;clearTimeout(noticeTimer);noticeTimer=setTimeout(()=>$('notice').hidden=true,ms);}
+function loadScript(url,timeout=22000){return new Promise((resolve,reject)=>{const s=document.createElement('script');s.src=url;s.async=true;let finished=false;const timer=setTimeout(()=>done(false,'timeout'),timeout);function done(ok,reason){if(finished)return;finished=true;clearTimeout(timer);s.onload=s.onerror=null;if(!ok)s.remove();ok?resolve():reject(new Error(reason||url));}s.onload=()=>done(true);s.onerror=()=>done(false,url);document.head.appendChild(s);});}
+async function library(urls,test){if(test())return;for(const u of urls){try{await loadScript(u,u.startsWith('http')?24000:3500);if(test())return;}catch(e){console.warn('Library source unavailable:',u);}}throw new Error('The 3D library could not load. Check your internet connection or ask whether the school Wi-Fi blocks external scripts.');}
+async function start(useAR){
+ if(state.booting)return;state.booting=true;$('start-ar').disabled=true;$('start-preview').disabled=true;setText('load-msg',useAR?'Loading the camera AR engine...':'Loading the 3D engine...');
+ try{
+  if(useAR&&(!window.isSecureContext||!navigator.mediaDevices?.getUserMedia))throw new Error('Camera AR requires HTTPS and a supported browser. Open your GitHub Pages link in Safari or Chrome, not a local file preview.');
+  aframeReady=aframeReady||library(LIBRARIES.aframe,()=>!!window.AFRAME).catch(e=>{aframeReady=null;throw e;});await aframeReady;
+  registerComponent();
+  if(useAR){arReady=arReady||library(LIBRARIES.arjs,()=>!!AFRAME.systems.arjs).catch(e=>{arReady=null;throw e;});await arReady;}
+  if(state.started){stopCamera();state.scene?.pause();state.scene?.remove();state.component=null;}
+  state.ar=useAR;state.found=false;state.started=true;state.pitch=useAR?0:.28;
+  document.body.classList.remove('landing-mode');document.body.classList.toggle('preview-mode',!useAR);
+  buildScene(useAR);$('launch').hidden=true;$('hud').hidden=false;$('dock').hidden=false;$('gesture-pad').hidden=false;setText('view-switch',useAR?'3D view':'Camera');
+  updateTracking();updateControls();
+ }catch(e){console.error(e);setText('load-msg',e.message);$('launch').hidden=false;}
+ finally{state.booting=false;$('start-ar').disabled=false;$('start-preview').disabled=false;}
+}
+function stopCamera(){document.querySelectorAll('video').forEach(v=>{if(v.srcObject?.getTracks)v.srcObject.getTracks().forEach(t=>t.stop());v.srcObject=null;v.remove();});document.querySelectorAll('.arjs-loader,.arjs-orientation-controls').forEach(n=>n.remove());}
+function buildScene(ar){
+ const scene=document.createElement('a-scene');state.scene=scene;
+ scene.setAttribute('embedded','');scene.setAttribute('vr-mode-ui','enabled:false');scene.setAttribute('device-orientation-permission-ui','enabled:false');scene.setAttribute('loading-screen','enabled:false');scene.setAttribute('renderer','antialias:true;alpha:true;precision:high;logarithmicDepthBuffer:false;colorManagement:true');
+ if(ar)scene.setAttribute('arjs','sourceType:webcam;debugUIEnabled:false;detectionMode:mono;maxDetectionRate:30;canvasWidth:640;canvasHeight:480;');
+ const host=document.createElement(ar?'a-marker':'a-entity');host.id='anchor';
+ if(ar){host.setAttribute('preset','hiro');host.setAttribute('smooth','true');host.setAttribute('smooth-count','5');host.setAttribute('smooth-tolerance','0.01');host.setAttribute('smooth-threshold','2');host.addEventListener('markerFound',()=>{state.found=true;updateTracking();});host.addEventListener('markerLost',()=>{state.found=false;updateTracking();});}
+ const model=document.createElement('a-entity');model.id='model';model.setAttribute('realistic-eclipse','');host.appendChild(model);scene.appendChild(host);
+ const camera=document.createElement('a-entity');camera.id='viewer';camera.setAttribute('camera',ar?'near:0.01;far:100':'near:0.01;far:100;fov:48');camera.setAttribute('look-controls','enabled:false');camera.setAttribute('wasd-controls','enabled:false');if(!ar)camera.setAttribute('position','0 0 0');scene.appendChild(camera);
+ scene.addEventListener('loaded',()=>{if(scene.renderer){scene.renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,1.7));scene.renderer.setClearColor(0x081321,ar?0:1);}const canvas=scene.canvas;if(canvas)canvas.addEventListener('webglcontextlost',e=>{e.preventDefault();showNotice('The graphics view paused. Close other apps, then reload this page.',15000);});});
+ $('scene-host').appendChild(scene);
+ if(ar){setTimeout(()=>{if(state.ar&&!state.found)showNotice('Point the camera at the complete Hiro square, not the QR code. Keep the marker visible while using the controls.',10000);},11000);}
+}
+window.addEventListener('camera-error',()=>{setText('tracking','Camera blocked. Allow camera access or use 3D view.');showNotice('Open this page in Safari or Chrome and allow the camera. You can use 3D view without a camera.',12000);});
+window.addEventListener('camera-init',()=>updateTracking());
+function updateTracking(){const ok=!state.ar||state.found;$('tracking').classList.toggle('ok',ok);setText('tracking',state.ar?(state.found?'Marker found - explore with your fingers':'Aim at the complete Hiro marker'):'3D preview - no camera or marker needed');}
+function updateTextures(){let good=0;const fields=[];for(const k of ['earth','moon','sun']){if(state.texture[k]==='ready'){good++;fields.push(k[0].toUpperCase()+k.slice(1)+': '+state.textureLabel[k]);}else fields.push(k[0].toUpperCase()+k.slice(1)+': '+state.texture[k]);}setText('texture-status',fields.join(' | '));$('texture-status').style.color=good===3?'#bacddd':'#ffcf76';}
+function chooseMode(m){state.mode=m;state.phase=m==='solar'?Math.PI:0;state.playing=false;state.focus='all';state.component?.applyFocus();updateControls();}
+function focusBody(name){state.focus=name;state.playing=false;state.zoom=1;state.yaw=name==='all'?.24:0;state.pitch=name==='all'&&!state.ar?.28:0;state.component?.applyFocus();updateControls();}
+function setZoom(v){state.zoom=clamp(v,.55,3.5);setText('zoom-readout',state.zoom.toFixed(1)+'\u00d7');}
+function resetView(){state.zoom=1;state.yaw=.24;state.pitch=state.ar?0:.28;state.focus='all';state.playing=false;state.phase=state.mode==='solar'?Math.PI:0;state.component?.applyFocus();updateControls();}
+function updateControls(){
+ $('solar').classList.toggle('active',state.mode==='solar');$('lunar').classList.toggle('active',state.mode==='lunar');$('solar').setAttribute('aria-pressed',String(state.mode==='solar'));$('lunar').setAttribute('aria-pressed',String(state.mode==='lunar'));setText('play',state.playing?'Pause orbit':'Play orbit');$('play').setAttribute('aria-pressed',String(state.playing));
+ for(const n of ['all','earth','moon','sun']){$('focus-'+n).classList.toggle('active',state.focus===n);$('focus-'+n).setAttribute('aria-pressed',String(state.focus===n));}
+ $('orbit').value=Math.round(normalizeAngle(state.phase)*180/Math.PI);setZoom(state.zoom);updateCaption();
+}
+function updateCaption(){
+ if(state.focus!=='all'){const name=state.focus[0].toUpperCase()+state.focus.slice(1);setText('view-title',name+' - surface close-up');setText('caption',state.focus==='sun'?'Artistic solar surface with a simulated glow. Return to All for eclipses.':'Detailed surface map on a 3D sphere. Drag to inspect; return to All for eclipses.');return;}
+ setText('view-title','Solar & lunar eclipses');const s=Math.abs(Math.sin(state.phase));
+ if(s<.14){if(Math.cos(state.phase)<0)setText('caption',"Solar alignment: the Moon blocks sunlight and casts a shadow on Earth.");else setText('caption',"Lunar alignment: Earth's shadow covers the Moon. The red tint is illustrative.");}
+ else setText('caption',"Not aligned: move the Moon along its orbit to discover an eclipse.");
+}
+function makePixel(THREE,color){const t=new THREE.DataTexture(new Uint8Array([...color,255]),1,1);t.colorSpace=THREE.SRGBColorSpace;t.needsUpdate=true;return t;}
+function loadTexture(THREE,url,timeout=17000){return new Promise((resolve,reject)=>{const loader=new THREE.TextureLoader();loader.setCrossOrigin('anonymous');let finished=false;const timer=setTimeout(()=>{finished=true;reject(new Error('Texture timeout'));},timeout);loader.load(url,t=>{if(finished){t.dispose();return;}finished=true;clearTimeout(timer);t.colorSpace=THREE.SRGBColorSpace;t.anisotropy=4;t.wrapS=THREE.RepeatWrapping;resolve(t);},undefined,e=>{if(finished)return;finished=true;clearTimeout(timer);reject(e);});});}
+const VERTEX=`
+varying vec2 vUv;varying vec3 vWorld;varying vec3 vN;
+void main(){vUv=uv;vec4 w=modelMatrix*vec4(position,1.0);vWorld=w.xyz;vN=normalize(mat3(modelMatrix)*normal);gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}
+`;
+const FRAGMENT=`
+precision highp float;
+uniform sampler2D uMap;uniform vec3 uSun,uOcc;uniform float uSunR,uOccR,uMoon,uRed,uInspect;
+varying vec2 vUv;varying vec3 vWorld,vN;
+float visibility(vec3 p){
+ vec3 s=uSun-p;vec3 o=uOcc-p;float ds=length(s),doo=length(o);if(doo>=ds||uInspect>.5)return 1.;
+ float a=asin(clamp(uSunR/ds,0.00001,.9999));float b=asin(clamp(uOccR/doo,0.00001,.9999));
+ float d=acos(clamp(dot(normalize(s),normalize(o)),-.9999999,.9999999));
+ if(d>=a+b)return 1.;if(d<=abs(b-a))return b>=a?0.:1.-b*b/(a*a);
+ float aa=a*a,bb=b*b,dd=d*d;
+ float x=acos(clamp((dd+aa-bb)/(2.*d*a),-1.,1.));float y=acos(clamp((dd+bb-aa)/(2.*d*b),-1.,1.));
+ float overlap=aa*x+bb*y-.5*sqrt(max(0.,(-d+a+b)*(d+a-b)*(d-a+b)*(d+a+b)));
+ return clamp(1.-overlap/(3.14159265*aa),0.,1.);
+}
+void main(){
+ vec3 albedo=texture2D(uMap,vUv).rgb;vec3 N=normalize(vN);vec3 L=normalize(uSun-vWorld);vec3 V=normalize(cameraPosition-vWorld);
+ if(uInspect>.5)L=normalize(V+vec3(-.35,.25,.08));
+ float nd=max(dot(N,L),0.);float vis=visibility(vWorld);float daylight=pow(nd,.72);
+ vec3 lit=albedo*(.055+1.07*daylight*vis);
+ if(uMoon>.5&&uInspect<.5){vec3 redBounce=vec3(.42,.064,.015)*pow(1.-vis,1.7)*daylight*uRed;lit+=albedo*redBounce;}
+ if(uMoon<.5){float ocean=smoothstep(.015,.07,albedo.b-max(albedo.r,albedo.g));float spec=pow(max(dot(reflect(-L,N),V),0.),36.)*.35*ocean*vis;lit+=vec3(.50,.65,.85)*spec;float rim=pow(1.-max(dot(N,V),0.),4.);lit+=vec3(.012,.05,.12)*rim*max(.15,daylight);}
+ gl_FragColor=vec4(lit,1.0);
+ #include <tonemapping_fragment>
+ #include <colorspace_fragment>
+}
+`;
+function registerComponent(){if(AFRAME.components['realistic-eclipse'])return;const T=AFRAME.THREE;
+ AFRAME.registerComponent('realistic-eclipse',{
+  init:function(){
+   state.component=this;this.dead=false;this.textures={};this.requestId={earth:0,moon:0,sun:0};this.root=new T.Group();this.rotationRig=new T.Group();this.focusRig=new T.Group();this.root.add(this.rotationRig);this.rotationRig.add(this.focusRig);this.el.setObject3D('eclipse',this.root);
+   this.geometry=new T.SphereGeometry(1,64,40);this.bodies={};this.labels={};this.labelTextures=[];
+   const specs={sun:{r:.58,x:-3,color:[255,170,54]},earth:{r:.46,x:0,color:[41,112,158]},moon:{r:.135,x:-.98,color:[154,150,145]}};
+   for(const [name,s] of Object.entries(specs)){
+    const tex=makePixel(T,s.color);let mat;
+    if(name==='sun')mat=new T.MeshBasicMaterial({map:tex,toneMapped:false});
+    else mat=new T.ShaderMaterial({uniforms:{uMap:{value:tex},uSun:{value:new T.Vector3()},uOcc:{value:new T.Vector3()},uSunR:{value:.58},uOccR:{value:name==='earth'?.135:.46},uMoon:{value:name==='moon'?1:0},uRed:{value:1},uInspect:{value:0}},vertexShader:VERTEX,fragmentShader:FRAGMENT,toneMapped:false});
+    const mesh=new T.Mesh(this.geometry,mat);mesh.position.set(s.x,0,0);mesh.scale.setScalar(s.r);mesh.userData.r=s.r;this.bodies[name]=mesh;this.focusRig.add(mesh);this.textures[name]=tex;
+    const label=this.makeLabel(name.toUpperCase());this.labels[name]=label;this.focusRig.add(label);
+   }
+   this.bodies.earth.rotation.y=2.5;this.bodies.moon.rotation.y=Math.PI;
+   this.glowTexture=this.makeGlow();this.glow=new T.Sprite(new T.SpriteMaterial({map:this.glowTexture,transparent:true,depthWrite:false,blending:T.AdditiveBlending,opacity:.66,toneMapped:false}));this.glow.position.copy(this.bodies.sun.position);this.glow.scale.set(2.08,2.08,1);this.focusRig.add(this.glow);
+   const pts=[];for(let i=0;i<=180;i++){const a=i/180*Math.PI*2;pts.push(new T.Vector3(.98*Math.cos(a),0,.98*Math.sin(a)));}this.orbitGeometry=new T.BufferGeometry().setFromPoints(pts);this.orbitMaterial=new T.LineDashedMaterial({color:0x69adbd,transparent:true,opacity:.45,dashSize:.04,gapSize:.032});this.orbitLine=new T.Line(this.orbitGeometry,this.orbitMaterial);this.orbitLine.computeLineDistances();this.focusRig.add(this.orbitLine);
+   this.worldSun=new T.Vector3();this.worldEarth=new T.Vector3();this.worldMoon=new T.Vector3();this.worldScale=new T.Vector3();this.targetFocus=new T.Vector3();
+   this.applyFocus();this.updatePositions();for(const k of ['earth','moon','sun'])this.loadMap(k);
+  },
+  makeLabel:function(text){const c=document.createElement('canvas');c.width=384;c.height=100;const x=c.getContext('2d');x.font='600 46px system-ui, sans-serif';x.textAlign='center';x.textBaseline='middle';x.lineJoin='round';x.lineWidth=8;x.strokeStyle='rgba(0,0,0,.8)';x.strokeText(text,192,50);x.fillStyle='#edf6ff';x.fillText(text,192,50);const t=new T.CanvasTexture(c);t.colorSpace=T.SRGBColorSpace;this.labelTextures.push(t);const sprite=new T.Sprite(new T.SpriteMaterial({map:t,transparent:true,depthTest:false,toneMapped:false}));sprite.scale.set(.65,.17,1);sprite.renderOrder=10;return sprite;},
+  makeGlow:function(){const c=document.createElement('canvas');c.width=c.height=256;const x=c.getContext('2d');const g=x.createRadialGradient(128,128,32,128,128,128);g.addColorStop(0,'rgba(255,189,76,.7)');g.addColorStop(.35,'rgba(255,142,39,.3)');g.addColorStop(.6,'rgba(255,94,19,.10)');g.addColorStop(1,'rgba(255,76,15,0)');x.fillStyle=g;x.fillRect(0,0,256,256);const t=new T.CanvasTexture(c);t.colorSpace=T.SRGBColorSpace;return t;},
+  setMap:function(name,t,label){if(this.dead){t.dispose();return;}const m=this.bodies[name].material;this.textures[name]?.dispose();this.textures[name]=t;if(name==='sun'){m.map=t;m.needsUpdate=true;}else m.uniforms.uMap.value=t;state.texture[name]='ready';state.textureLabel[name]=label;updateTextures();},
+  loadMap:async function(name){const id=++this.requestId[name];state.texture[name]='loading';updateTextures();for(const [url,label] of SOURCES[name]){try{const t=await loadTexture(T,url,url.startsWith('http')?17000:2500);if(this.dead||id!==this.requestId[name]){t.dispose();return;}this.setMap(name,t,label);return;}catch(e){if(this.dead||id!==this.requestId[name])return;console.warn('Surface source unavailable',name,url);}}state.texture[name]='unavailable';updateTextures();showNotice('A surface map did not load. Open Info to retry or import a saved map. Check your internet connection.',12000);},
+  importMap:function(name,file){if(!file)return;const id=++this.requestId[name];const reader=new FileReader();reader.onload=async()=>{try{const t=await loadTexture(T,reader.result);if(this.dead||id!==this.requestId[name]){t.dispose();return;}this.setMap(name,t,'Imported map');}catch(e){showNotice('That image could not be loaded. Choose a JPG or PNG surface map.');}};reader.onerror=()=>showNotice('Unable to read that image.');reader.readAsDataURL(file);},
+  applyFocus:function(){if(!this.bodies)return;for(const [name,m]of Object.entries(this.bodies)){m.visible=state.focus==='all'||state.focus===name;if(name!=='sun')m.material.uniforms.uInspect.value=state.focus==='all'?0:1;this.labels[name].visible=state.labels&&state.focus==='all';}this.orbitLine.visible=state.labels&&state.focus==='all';this.glow.visible=state.focus==='all'||state.focus==='sun';},
+  updatePositions:function(){const moon=this.bodies.moon;moon.position.set(.98*Math.cos(state.phase),0,.98*Math.sin(state.phase));moon.rotation.y=-state.phase+Math.PI/2;for(const[name,label]of Object.entries(this.labels)){label.position.copy(this.bodies[name].position);label.position.y-=this.bodies[name].userData.r+.17;}},
+  tick:function(time,delta){if(this.dead)return;const dt=Math.min(delta||0,80)/1000;
+   if(state.playing){state.phase=normalizeAngle(state.phase+dt*.34);this.bodies.earth.rotation.y+=dt*.12;this.bodies.sun.rotation.y+=dt*.027;if(time-state.lastStatus>180){state.lastStatus=time;$('orbit').value=Math.round(state.phase*180/Math.PI);updateCaption();}}
+   this.updatePositions();const ar=state.ar;
+   const portrait=window.innerHeight>window.innerWidth;const wh=window.innerHeight,ww=window.innerWidth;const hh=$('hud').offsetHeight+18,dh=$('dock').offsetHeight+18;const free=Math.max(100,wh-hh-dh);const field=4.63;let base=ar?.36:(state.focus==='all'?Math.min(1.02,.83*ww/wh,field*free/wh/1.65):Math.min(1.4,field*.85*ww/wh/1.8,field*.82*free/wh/1.8));
+   let focusScale=1;if(state.focus!=='all')focusScale=.90/this.bodies[state.focus].userData.r;
+   this.root.scale.setScalar(base*state.zoom*focusScale);
+   this.root.position.set(0,ar?.58:(.5-(hh+free/2)/wh)*field,ar?0:-5.2);
+   this.rotationRig.rotation.set(state.pitch,state.yaw,0,'YXZ');
+   if(state.focus==='all')this.targetFocus.set(1.16,0,0);else this.targetFocus.copy(this.bodies[state.focus].position).multiplyScalar(-1);
+   this.focusRig.position.copy(this.targetFocus);this.root.updateMatrixWorld(true);
+   this.bodies.sun.getWorldPosition(this.worldSun);this.bodies.earth.getWorldPosition(this.worldEarth);this.bodies.moon.getWorldPosition(this.worldMoon);this.root.getWorldScale(this.worldScale);const scale=Math.abs(this.worldScale.x);
+   const eu=this.bodies.earth.material.uniforms,mu=this.bodies.moon.material.uniforms;
+   eu.uSun.value.copy(this.worldSun);mu.uSun.value.copy(this.worldSun);eu.uOcc.value.copy(this.worldMoon);mu.uOcc.value.copy(this.worldEarth);eu.uSunR.value=mu.uSunR.value=.58*scale;eu.uOccR.value=.135*scale;mu.uOccR.value=.46*scale;mu.uRed.value=state.red?1:0;
+  },
+  remove:function(){this.dead=true;Object.values(this.textures).forEach(t=>t.dispose());Object.values(this.bodies).forEach(m=>m.material.dispose());Object.values(this.labels).forEach(m=>m.material.dispose());this.labelTextures.forEach(t=>t.dispose());this.geometry.dispose();this.orbitGeometry.dispose();this.orbitMaterial.dispose();this.glowTexture.dispose();this.glow.material.dispose();this.el.removeObject3D('eclipse');}
+ });
+}
+/* Pointer events work for one-finger rotation, two-finger scale, and a mouse. */
+const pointers=new Map();let previousPinch=0;
+function pinchDistance(){const p=[...pointers.values()];return p.length<2?0:Math.hypot(p[0].x-p[1].x,p[0].y-p[1].y);}
+$('gesture-pad').addEventListener('pointerdown',e=>{if(e.pointerType==='mouse'&&e.button!==0)return;e.preventDefault();pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});e.currentTarget.setPointerCapture(e.pointerId);previousPinch=pinchDistance();});
+$('gesture-pad').addEventListener('pointermove',e=>{if(!pointers.has(e.pointerId))return;e.preventDefault();const old=pointers.get(e.pointerId);pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});if(pointers.size===1){state.yaw+=(e.clientX-old.x)*.007;state.pitch=clamp(state.pitch+(e.clientY-old.y)*.007,-1.45,1.45);}else{const d=pinchDistance();if(previousPinch>0)setZoom(state.zoom*d/previousPinch);previousPinch=d;}});
+function pointerEnd(e){pointers.delete(e.pointerId);previousPinch=pinchDistance();}
+$('gesture-pad').addEventListener('pointerup',pointerEnd);$('gesture-pad').addEventListener('pointercancel',pointerEnd);window.addEventListener('blur',()=>{pointers.clear();previousPinch=0;});
+$('gesture-pad').addEventListener('wheel',e=>{e.preventDefault();setZoom(state.zoom*Math.exp(-e.deltaY*.001));},{passive:false});
+$('start-ar').addEventListener('click',()=>start(true));$('start-preview').addEventListener('click',()=>start(false));$('view-switch').addEventListener('click',()=>start(!state.ar));
+$('solar').addEventListener('click',()=>chooseMode('solar'));$('lunar').addEventListener('click',()=>chooseMode('lunar'));
+$('play').addEventListener('click',()=>{if(state.focus!=='all'){state.focus='all';state.zoom=1;state.component?.applyFocus();}state.playing=!state.playing;updateControls();});
+$('zoom-in').addEventListener('click',()=>setZoom(state.zoom*1.2));$('zoom-out').addEventListener('click',()=>setZoom(state.zoom/1.2));$('reset').addEventListener('click',resetView);
+$('orbit').addEventListener('input',e=>{state.phase=Number(e.target.value)*Math.PI/180;state.playing=false;if(state.focus!=='all'){state.focus='all';state.zoom=1;state.component?.applyFocus();}state.mode=Math.cos(state.phase)<0?'solar':'lunar';updateControls();});
+for(const n of ['all','earth','moon','sun'])$('focus-'+n).addEventListener('click',()=>focusBody(n));
+$('info-open').addEventListener('click',()=>{$('info').hidden=false;state.playing=false;updateControls();$('info-close').focus();});
+function closeInfo(){$('info').hidden=true;$('info-open').focus();}
+$('info-close').addEventListener('click',closeInfo);$('info').addEventListener('click',e=>{if(e.target===$('info'))closeInfo();});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('info').hidden)closeInfo();});
+$('show-labels').addEventListener('change',e=>{state.labels=e.target.checked;state.component?.applyFocus();});$('show-red').addEventListener('change',e=>{state.red=e.target.checked;});
+$('retry-textures').addEventListener('click',()=>{for(const n of ['earth','moon','sun'])if(state.texture[n]!=='ready')state.component?.loadMap(n);});
+for(const n of ['earth','moon','sun'])$('import-'+n).addEventListener('change',e=>state.component?.importMap(n,e.target.files[0]));
+document.addEventListener('visibilitychange',()=>{if(document.hidden){state.playing=false;updateControls();}});
+window.addEventListener('pagehide',stopCamera);
+// Exposed read-only diagnostic data helps a teacher check loading and controls.
+window.eclipseDiagnostics=()=>({version:VERSION,mode:state.mode,phase:state.phase,focus:state.focus,zoom:state.zoom,yaw:state.yaw,pitch:state.pitch,playing:state.playing,ar:state.ar,markerFound:state.found,textures:{...state.texture},sources:{...state.textureLabel}});
+</script>
+</body></html>
