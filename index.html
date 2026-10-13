@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
 <meta name="theme-color" content="#07111f">
-<title>Eclipse Explorer 6.0 — Real EVA Astronauts</title>
+<title>Eclipse Explorer 7.0 — Montfort Academy</title>
 <style>
 :root{color-scheme:dark;--bg:#07111f;--glass:rgba(7,19,34,.92);--line:rgba(181,213,238,.24);--txt:#f3f8ff;--muted:#b9cddd;--cyan:#7ee4f5;--gold:#ffd081}
 *{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;font:15px/1.45 system-ui,-apple-system,'Segoe UI',sans-serif;background:var(--bg);color:var(--txt);overscroll-behavior:none}[hidden]{display:none!important}
@@ -23,44 +23,46 @@ button{border:1px solid var(--line);border-radius:13px;background:#193248;color:
 #help{position:absolute;inset:0;background:#000a;display:grid;place-items:center;z-index:60;pointer-events:auto;padding:14px}#help article{background:#102539;border:1px solid #7394ac;padding:20px;border-radius:17px;max-width:520px;max-height:89dvh;overflow:auto}#help h2{margin:0 0 8px}#help p,#help li{font-size:13px;color:#d1e3ee;line-height:1.55}#help ul{padding-left:20px}#help button{float:right}
 @media(max-height:670px){.orbit-art{display:none}#intro{padding:15px}h1{font-size:31px;margin:7px 0}#intro p{font-size:12px}.start button{min-height:40px}#dock{padding:7px}.tip,.controlHint{margin:4px 0}.slider{margin-top:4px}}@media(max-width:380px){#dock{padding:8px 6px}.controls button{font-size:10px}#modes button{font-size:12px}#titleBadge strong{font-size:13px}#intro{padding:18px}}
 
-/* Permanent student credit in all active viewing modes, including WebXR DOM overlay. */
-#studentCredits{position:absolute;top:max(98px,calc(env(safe-area-inset-top) + 98px));left:50%;transform:translateX(-50%);z-index:15;pointer-events:none;text-align:center;width:min(450px,calc(100% - 26px));border:1px solid rgba(253,214,132,.78);background:linear-gradient(110deg,rgba(15,29,53,.91),rgba(49,30,67,.91));box-shadow:0 4px 23px rgba(0,0,0,.5),inset 0 0 24px rgba(255,191,94,.08);border-radius:13px;padding:6px 10px 7px;backdrop-filter:blur(8px)}
-#studentCredits .byline{display:block;color:#ffe5a9;font-size:9px;font-weight:800;letter-spacing:.15em;line-height:1.1}
-#studentCredits .students{display:block;color:#fff3cd;font-size:clamp(11px,3vw,15px);font-weight:900;line-height:1.24;text-shadow:0 0 12px rgba(255,205,90,.55);letter-spacing:.015em}
-#studentCredits .classline{display:block;color:#97e8fa;font-size:10px;letter-spacing:.1em;font-weight:750;line-height:1.1}
-@media(max-width:380px){#studentCredits{top:max(87px,calc(env(safe-area-inset-top) + 87px));padding:5px 8px}#studentCredits .students{font-size:11px}#studentCredits .classline{font-size:9px}}
-#surfaceStatus{top:max(166px,calc(env(safe-area-inset-top) + 166px))}
+#surfaceStatus{top:max(96px,calc(env(safe-area-inset-top) + 96px))}
 /* Happy student astronaut button, without obstructing the AR area. */
 #kidsToggle{border-color:rgba(255,203,102,.65);background:#453254;color:#fff5cf}
 #kidsToggle:focus-visible{outline:3px solid #ffe48b}
 
-/* V5: the names are a small HUD credit, never 3D sprites on the astronauts.
-   The credit slides away from the centre and shrinks during close-up zoom. */
-#studentCredits{
-  --credits-travel:0px;
-  --credits-scale:1;
-  transform:translateX(-50%) translateY(var(--credits-travel)) scale(var(--credits-scale));
-  transform-origin:top center;
-  transition:transform .24s ease;
-  max-width:calc(100vw - 24px);
-}
-#studentCredits .students{font-size:clamp(10px,2.65vw,13px)}
-@media (prefers-reduced-motion:reduce){#studentCredits{transition:none}}
+
+/* V7 front-page identity: visible before launching, NEVER over the eclipse. */
+.schoolIdentity{display:flex;align-items:center;justify-content:center;gap:11px;padding:12px 9px 13px;border-radius:13px;background:linear-gradient(115deg,#0f3852,#12334b 55%,#242847);border:1px solid rgba(117,220,245,.58);text-align:center;font-size:clamp(13px,3.9vw,18px);font-weight:900;letter-spacing:.07em;line-height:1.3;color:#fff6d4;text-shadow:0 2px 16px rgba(255,212,92,.18)}
+.schoolIdentity div span{display:block;font-size:clamp(10px,2.9vw,13px);color:#a5eafb;letter-spacing:.10em;margin-top:2px}
+.schoolSpark{color:#ffd676;font-size:21px;flex-shrink:0}
+.projectAuthors{display:flex;flex-direction:column;align-items:center;gap:4px;text-align:center;margin:0 0 17px;padding:11px 8px 12px;border-radius:14px;background:linear-gradient(120deg,rgba(20,50,76,.78),rgba(36,36,79,.7));border:1px solid rgba(255,217,137,.57)}
+.projectAuthors .authorsLabel{color:#ffe3a5;font-size:10px;font-weight:850;letter-spacing:.18em}
+.projectAuthors strong{font-weight:900;font-size:clamp(13px,3.6vw,17px);letter-spacing:.015em;line-height:1.3;color:#fff6dc}
+.projectAuthors .andSymbol{color:#ffd06c}
+.projectAuthors .classIdentity{display:block;padding:3px 13px;border-radius:20px;background:#285b75;color:#e3f9ff;font-size:12px;letter-spacing:.14em;font-weight:800}
+@media(max-height:720px){#intro{padding:16px}.schoolIdentity{padding:8px 6px}.projectAuthors{padding:7px;margin-bottom:12px}.orbit-art{margin:11px auto 14px}.schoolSpark{font-size:15px}}
 </style>
 </head>
 <body>
 <video id="cameraFeed" autoplay muted playsinline hidden></video>
 <div id="stage"></div>
 <div id="ui">
- <section id="landing"><div id="intro"><div class="kicker">SCHOOL SCIENCE EXHIBITION · VERSION 6</div><h1>Hold an eclipse<br>in your hands.</h1><p>Explore realistic eclipses with Kavin and Hashvanth in detailed space suits! Their original photo faces appear inside the helmets. Place, rotate, zoom and watch them jump above the Moon.</p><div class="orbit-art" aria-hidden="true"><b class="s"></b><i></i><b class="m"></b><i></i><b class="e"></b></div><div class="start"><button class="primary" id="startCamera">📷 Camera effect — tap anywhere to place</button><button id="startWorld">🌍 True table AR — supported Android phones</button><button id="startPreview">✋ Interactive 3D — without camera</button></div><div id="launchStatus">Checking Android AR capability...</div><p class="small">No Hiro marker or floating name tags. The astronauts wear detailed EVA-inspired space suits and their faces use the original photos. Camera effect follows the screen; true table AR needs ARCore/WebXR.</p><div class="credit">BY <b>S. KAVIN ABISHVA &amp; S. HASHVANTH</b> · V STD — A SECTION</div></div></section>
+ <section id="landing"><div id="intro">
+  <div class="schoolIdentity"><span class="schoolSpark">✦</span><div>MONTFORT ACADEMY<span>HIGHER SECONDARY SCHOOL</span></div><span class="schoolSpark">✦</span></div>
+  <div class="kicker" style="margin-top:18px">V STANDARD · SCIENCE EXHIBITION · VERSION 7</div>
+  <h1>Hold an eclipse<br>in your hands.</h1>
+  <p>Explore the Sun, Earth and Moon in 3D. Zoom, rotate, create eclipses and watch two young astronauts jump and wave beside the Moon!</p>
+  <div class="orbit-art" aria-hidden="true"><b class="s"></b><i></i><b class="m"></b><i></i><b class="e"></b></div>
+  <div class="projectAuthors"><span class="authorsLabel">PROJECT PRESENTED BY</span><strong>S. KAVIN ABISHVA <span class="andSymbol">&amp;</span> S. HASHVANTH</strong><span class="classIdentity">V STD · “A” SEC</span></div>
+  <div class="start"><button class="primary" id="startCamera">📷 Camera effect — tap anywhere to place</button><button id="startWorld">🌍 True table AR — supported Android phones</button><button id="startPreview">✋ Interactive 3D — without camera</button></div>
+  <div id="launchStatus">Checking Android AR capability...</div>
+  <p class="small">No Hiro marker needed. The names and school appear on this opening page only, leaving the eclipse viewing area clear. True table AR requires ARCore/WebXR.</p>
+</div></section>
  <div id="touchZone" hidden aria-label="Drag to rotate; pinch to zoom; tap to place in camera mode"></div>
  <div id="header" hidden><div id="titleBadge"><div class="kicker">ECLIPSE EXPLORER</div><strong>Solar &amp; Lunar Eclipse</strong><div id="modeStatus" role="status">Ready</div></div><div style="display:flex;gap:6px"><button id="changeMode">Modes</button><button id="openHelp">?</button></div></div>
- <div id="studentCredits" hidden aria-label="Project by S. Kavin Abishva and S. Hashvanth, V Standard A Section"><span class="byline">PROJECT BY</span><strong class="students">S. KAVIN ABISHVA &amp; S. HASHVANTH</strong><span class="classline">V STD &amp; A SECTION</span></div>
  <div id="surfaceStatus" hidden aria-live="polite">Preparing 3D planets…</div>
  <div id="placing" hidden><span id="placeTarget">◎</span><strong id="placeTitle">Tap to place</strong><p id="placeText">Tap anywhere on the camera view to position your eclipse model.</p><button id="placeBtn" class="primary" hidden disabled>Place model here</button></div>
  <div id="dock" hidden><div id="modes"><button id="solar" class="solar selected">☀ Solar eclipse</button><button id="lunar" class="lunar">🌕 Lunar eclipse</button></div><div id="explain" class="tip">Solar eclipse: Moon between Sun and Earth.</div><div class="controls"><button id="left">↶ Rotate</button><button id="right">Rotate ↷</button><button id="zoomOut">− Zoom</button><button id="zoomIn">+ Zoom</button><button id="reset">↺ Reset</button></div><div class="controls2"><button id="play">▶ Play orbit</button><button id="kidsToggle" title="Toggle astronaut dance">🎉 Kids: PLAYING</button><button id="reposition" hidden>📍 Move position</button><button id="earthView">🌍 Earth</button><button id="sunView">☀ Sun</button><button id="moonView">🌕 Moon</button></div><label class="slider">Move Moon <input id="moonAngle" type="range" min="0" max="360" value="180" step="1"><span id="angle">180°</span></label><div class="controlHint">Drag = rotate · Pinch = zoom · Move position = place again</div></div>
  <div id="toast" hidden role="alert"></div>
- <div id="help" hidden><article><button id="closeHelp">Close</button><h2>How to use</h2><ul><li><b>Camera effect:</b> Allow camera permission, then tap any spot to place the model on your screen. Rotate and zoom it. This is a screen-aligned camera overlay, not real table tracking.</li><li><b>True table AR:</b> Needs a supported Android phone with ARCore, Chrome and WebXR hit-test. Move camera over a table until the ring appears, then tap Place.</li><li><b>3D:</b> Works without camera. One finger rotates, two fingers pinch, and +/− buttons zoom. Use Move Moon to control eclipses.</li><li><b>All modes:</b> The student names stay in a small floating credit that moves away during zoom. Their original photographs are embedded directly into the publicly hosted HTML. Solar/Lunar choose an alignment. Press Play orbit only when you want motion. Use Earth/Sun/Moon buttons for a close-up.</li></ul><p>Scientific note: Sizes and distances are not to scale; eclipse shadows and lunar reddening are illustrative. Sun surface is a detailed computer-generated solar texture; Earth/Moon are mapped with astronomical imagery when loaded.</p><p>Camera footage remains on your phone and is not uploaded by this webpage.</p><p><small>Version 6.0 · Real-photo faces · Detailed EVA suits · No Hiro marker</small></p></article></div>
+ <div id="help" hidden><article><button id="closeHelp">Close</button><h2>How to use</h2><ul><li><b>Camera effect:</b> Allow camera permission, then tap any spot to place the model on your screen. Rotate and zoom it. This is a screen-aligned camera overlay, not real table tracking.</li><li><b>True table AR:</b> Needs a supported Android phone with ARCore, Chrome and WebXR hit-test. Move camera over a table until the ring appears, then tap Place.</li><li><b>3D:</b> Works without camera. One finger rotates, two fingers pinch, and +/− buttons zoom. Use Move Moon to control eclipses.</li><li><b>All modes:</b> The school and student names appear on the welcome page only and never cover the planets. The astronaut faces use original photographs embedded directly in this publicly hosted HTML. Solar/Lunar choose an alignment. Press Play orbit only when you want motion. Use Earth/Sun/Moon buttons for a close-up.</li></ul><p>Scientific note: Sizes and distances are not to scale; eclipse shadows and lunar reddening are illustrative. Sun surface is a detailed computer-generated solar texture; Earth/Moon are mapped with astronomical imagery when loaded.</p><p>Camera footage remains on your phone and is not uploaded by this webpage.</p><p><small>Version 7.0 · Brighter Earth · Clean eclipse view · Real-photo astronaut faces</small></p></article></div>
 </div>
 <script type="module">
 const $=id=>document.getElementById(id),clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
@@ -71,7 +73,7 @@ function say(id,t){$(id).textContent=t;}
 function notice(t,ms=5700){if(!$('landing').hidden){say('launchStatus',t);return;}const el=$('toast');say('toast',t);el.hidden=false;clearTimeout(S.toastTimer);S.toastTimer=setTimeout(()=>el.hidden=true,ms);}
 function cssView(v){document.body.classList.toggle('camera',v==='camera');document.body.classList.toggle('xr',v==='xr');}
 function isVisible(id){return !$(id).hidden;}
-function startScreen(){ $('landing').hidden=true;$('header').hidden=false;$('studentCredits').hidden=false;$('dock').hidden=false;$('touchZone').hidden=false;$('surfaceStatus').hidden=false; }
+function startScreen(){ $('landing').hidden=true;$('header').hidden=false;$('dock').hidden=false;$('touchZone').hidden=false;$('surfaceStatus').hidden=false; }
 function setBusy(v){['startCamera','startWorld','startPreview'].forEach(id=>$(id).disabled=v);}
 // Banded turbulence, granules and sunspots: a photographic-inspired simulated solar surface.
 function solarTexture(){const c=document.createElement('canvas');c.width=896;c.height=448;const ctx=c.getContext('2d'),img=ctx.createImageData(c.width,c.height);const data=img.data,W=c.width,H=c.height;
@@ -249,28 +251,18 @@ async function initialize(){if(S.ready)return;S.ready='starting';try{THREE=await
  S.scene.add(new THREE.AmbientLight(0x94a3c4,.37));S.root=new THREE.Group();S.scene.add(S.root);S.model=new THREE.Group();S.root.add(S.model);
  const sunlight=new THREE.DirectionalLight(0xfff4de,2.2);sunlight.position.set(-2.8,.2,.1);sunlight.target.position.set(.45,0,0);sunlight.castShadow=true;sunlight.shadow.mapSize.set(1024,1024);sunlight.shadow.camera.left=-3;sunlight.shadow.camera.right=3;sunlight.shadow.camera.top=3;sunlight.shadow.camera.bottom=-3;sunlight.shadow.camera.far=10;S.model.add(sunlight);S.model.add(sunlight.target);
  S.sun=planet(.46,-1.53,0xffffff,true);S.sun.material.map=solarTexture();S.sun.material.needsUpdate=true;
- S.earth=planet(.34,.58,0x2488b9);S.moon=planet(.133,.07,0x969794);installStudents();
+ S.earth=planet(.34,.58,0x55b5e7);S.earth.material.emissive.set(0x255a87);S.earth.material.emissiveIntensity=.55;S.moon=planet(.133,.07,0x969794);installStudents();
  let glow=new THREE.Sprite(new THREE.SpriteMaterial({map:coronaTexture(),blending:THREE.AdditiveBlending,transparent:true,depthWrite:false,depthTest:true}));glow.position.copy(S.sun.position);glow.scale.set(2.05,2.05,1);S.model.add(glow);S.glow=glow;
  const radius=.64,orbit=[];for(let i=0;i<=200;i++){const t=i/200*Math.PI*2;orbit.push(new THREE.Vector3(.58+radius*Math.cos(t),radius*Math.sin(t)*Math.sin(.0897),radius*Math.sin(t)*Math.cos(.0897)));}const orbitMesh=new THREE.Line(new THREE.BufferGeometry().setFromPoints(orbit),new THREE.LineBasicMaterial({color:0x7abfdb,transparent:true,opacity:.28,depthWrite:false}));S.model.add(orbitMesh);
  let pts=[],seed=77;for(let i=0;i<290;i++){seed=(Math.imul(seed,1664525)+1013904223)>>>0;const u=seed/4294967296;seed=(Math.imul(seed,1664525)+1013904223)>>>0;const v=seed/4294967296;seed=(Math.imul(seed,1664525)+1013904223)>>>0;const w=seed/4294967296;pts.push((u-.5)*25,(v-.5)*17,-5-w*19);}const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute(pts,3));S.stars=new THREE.Points(geo,new THREE.PointsMaterial({color:0x9cc8fa,size:.025,opacity:.7,transparent:true}));S.scene.add(S.stars);
  S.reticle=new THREE.Mesh(new THREE.RingGeometry(.075,.100,40).rotateX(-Math.PI/2),new THREE.MeshBasicMaterial({color:0x9bf3ff,side:THREE.DoubleSide,depthTest:false,transparent:true,opacity:.95}));S.reticle.matrixAutoUpdate=false;S.reticle.visible=false;S.scene.add(S.reticle);
  window.addEventListener('resize',resize);S.renderer.setAnimationLoop(tick);S.ready=true;S.root.position.set(0,.20,0);resize();apply();updateMoon();updateUI();loadPlanets();}
 async function textureFrom(url){return new Promise((resolve,reject)=>{let tmr=setTimeout(()=>reject(new Error('texture timeout')),11000);let loader=new THREE.TextureLoader();loader.setCrossOrigin('anonymous');loader.load(url,t=>{clearTimeout(tmr);t.colorSpace=THREE.SRGBColorSpace;t.anisotropy=4;resolve(t);},undefined,e=>{clearTimeout(tmr);reject(e);});});}
-async function loadPlanets(){for(const name of ['earth','moon']){S.texture[name]='loading';updateTextureStatus();let tex=null;for(const url of source[name]){try{tex=await textureFrom(url);break;}catch(e){console.warn(name,'texture source failed',url);}}if(tex){let mesh=S[name],old=mesh.material;mesh.material=new THREE.MeshStandardMaterial({map:tex,color:0xffffff,roughness:.95,metalness:0});old.dispose();S.texture[name]='ready';}else S.texture[name]='fallback';updateTextureStatus();}}
+async function loadPlanets(){for(const name of ['earth','moon']){S.texture[name]='loading';updateTextureStatus();let tex=null;for(const url of source[name]){try{tex=await textureFrom(url);break;}catch(e){console.warn(name,'texture source failed',url);}}if(tex){let mesh=S[name],old=mesh.material;mesh.material=name==='earth'?new THREE.MeshStandardMaterial({map:tex,color:0xffffff,roughness:.92,metalness:0,emissive:0xe4f3ff,emissiveMap:tex,emissiveIntensity:.62}):new THREE.MeshStandardMaterial({map:tex,color:0xffffff,roughness:.95,metalness:0});old.dispose();S.texture[name]='ready';}else S.texture[name]='fallback';updateTextureStatus();}}
 function updateTextureStatus(){say('surfaceStatus','Surface detail · Sun ✓ · Earth '+(S.texture.earth==='ready'?'✓':S.texture.earth)+' · Moon '+(S.texture.moon==='ready'?'✓':S.texture.moon));}
-function resize(){if(!S.renderer)return;let w=innerWidth,h=innerHeight;S.renderer.setSize(w,h,false);S.cam.aspect=w/h;S.cam.updateProjectionMatrix();if(S.view!=='xr'){const zz=Math.max(5.8,2.3/(Math.tan(43*Math.PI/360)*Math.max(.32,w/h)));S.cam.position.set(0,.26,zz);S.cam.lookAt(0,.20,0);}updateCreditsForZoom();}
+function resize(){if(!S.renderer)return;let w=innerWidth,h=innerHeight;S.renderer.setSize(w,h,false);S.cam.aspect=w/h;S.cam.updateProjectionMatrix();if(S.view!=='xr'){const zz=Math.max(5.8,2.3/(Math.tan(43*Math.PI/360)*Math.max(.32,w/h)));S.cam.position.set(0,.26,zz);S.cam.lookAt(0,.20,0);}}
 
-function updateCreditsForZoom(){
- const badge=$('studentCredits'),dock=$('dock');
- if(!badge)return;
- const t=clamp((S.zoom-1)/2.5,0,1);
- const dockHeight=(dock&&!dock.hidden?dock.getBoundingClientRect().height:190)||190;
- const travel=Math.round(Math.max(0,Math.min(350,innerHeight-dockHeight-215))*t);
- const scale=(1-.12*t).toFixed(3);
- badge.style.setProperty('--credits-travel',travel+'px');
- badge.style.setProperty('--credits-scale',scale);
-}
-function apply(){if(!S.model||!S.root)return;S.model.rotation.set(S.pitch,S.yaw,0);const v=S.view==='xr'?.25:1;S.root.scale.setScalar(v*S.zoom);updateCreditsForZoom();say('modeStatus',S.view==='xr'?'True AR · '+Math.round(S.zoom*100)+'%':S.view==='camera'?'Camera effect · '+Math.round(S.zoom*100)+'%':'Interactive 3D · '+Math.round(S.zoom*100)+'%');}
+function apply(){if(!S.model||!S.root)return;S.model.rotation.set(S.pitch,S.yaw,0);const v=S.view==='xr'?.25:1;S.root.scale.setScalar(v*S.zoom);say('modeStatus',S.view==='xr'?'True AR · '+Math.round(S.zoom*100)+'%':S.view==='camera'?'Camera effect · '+Math.round(S.zoom*100)+'%':'Interactive 3D · '+Math.round(S.zoom*100)+'%');}
 function updateMoon(){if(!S.moon)return;let t=S.theta,r=.64;S.moon.position.set(.58+r*Math.cos(t),r*Math.sin(t)*Math.sin(.0897),r*Math.sin(t)*Math.cos(.0897));const dark=Math.pow(Math.max(0,Math.cos(t)),30);if(S.moon.material.color)S.moon.material.color.copy(new THREE.Color(0xffffff).lerp(new THREE.Color(0xcf5741),dark*.6));if('emissive' in S.moon.material){S.moon.material.emissive.set(0x8b2110);S.moon.material.emissiveIntensity=.15*dark;}}
 function tick(t,frame){if(!S.ready||S.ready==='starting')return;const dt=S.lastTime?Math.min(.05,(t-S.lastTime)/1000):0;S.lastTime=t;if(S.playing){S.theta=(S.theta+dt*.38)%(2*Math.PI);updateMoon();S.earth.rotation.y+=dt*.12;S.sun.rotation.y+=dt*.025;if((t|0)%290<19)updateUI(true);}
  if(S.view==='xr'&&frame&&S.hitSource&&!S.placed){let space=S.renderer.xr.getReferenceSpace(),res=frame.getHitTestResults(S.hitSource);if(res.length&&space){let pose=res[0].getPose(space);if(pose){S.reticle.matrix.fromArray(pose.transform.matrix);S.reticle.visible=true;S.hitReady=true;$('placeBtn').disabled=false;say('placeText','Surface found! Tap PLACE or tap the glowing ring.');}}else{S.reticle.visible=false;S.hitReady=false;$('placeBtn').disabled=true;}}
@@ -291,7 +283,7 @@ async function enterXR(){closeStream();await initialize();const ok=await support
 function placeXR(){if(S.view!=='xr'||S.placed||!S.hitReady||!S.reticle.visible)return;const p=new THREE.Vector3(),q=new THREE.Quaternion(),scale=new THREE.Vector3();S.reticle.matrix.decompose(p,q,scale);S.root.position.copy(p);S.root.position.y+=.16;S.root.visible=true;S.placed=true;S.reticle.visible=false;$('placing').hidden=true;$('reposition').hidden=false;say('modeStatus','True table AR · drag to rotate, pinch to zoom');}
 function reposition(){if(S.view==='camera'){S.placed=false;S.root.visible=false;$('placing').hidden=false;$('placeBtn').hidden=false;$('placeBtn').disabled=false;say('placeBtn','Place at centre');say('placeTitle','Tap anywhere to place');say('placeText','Tap an open area or choose Place at centre.');}else if(S.view==='xr'){S.placed=false;S.hitReady=false;S.root.visible=false;S.reticle.visible=false;$('placing').hidden=false;$('placeBtn').disabled=true;say('placeText','Slowly move phone toward a flat table.');}}
 async function leaveXR(){if(S.xrSession){const old=S.xrSession;S.xrSession=null;try{await old.end();}catch(e){}}}
-function closeToHome(){leaveXR();closeStream();S.view='none';cssView('none');$('landing').hidden=false;$('header').hidden=true;$('studentCredits').hidden=true;$('dock').hidden=true;$('touchZone').hidden=true;$('placing').hidden=true;$('surfaceStatus').hidden=true;}
+function closeToHome(){leaveXR();closeStream();S.view='none';cssView('none');$('landing').hidden=false;$('header').hidden=true;$('dock').hidden=true;$('touchZone').hidden=true;$('placing').hidden=true;$('surfaceStatus').hidden=true;}
 // Pointer interactions work in preview, camera overlay AND placed true AR.
 const touches=new Map();let lastPinch=0,wasTap=false;
 $('touchZone').addEventListener('pointerdown',e=>{e.preventDefault();if(S.view==='xr'&&!S.placed)return;try{$('touchZone').setPointerCapture(e.pointerId);}catch(err){}touches.set(e.pointerId,{x:e.clientX,y:e.clientY,sx:e.clientX,sy:e.clientY,moved:false});lastPinch=0;wasTap=touches.size===1;});
