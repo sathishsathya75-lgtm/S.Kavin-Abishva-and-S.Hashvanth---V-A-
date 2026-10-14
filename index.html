@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
 <meta name="theme-color" content="#07111f">
-<title>Eclipse Explorer 7.0 — Montfort Academy</title>
+<title>Eclipse Explorer 7.2 — Montfort Academy</title>
 <style>
 :root{color-scheme:dark;--bg:#07111f;--glass:rgba(7,19,34,.92);--line:rgba(181,213,238,.24);--txt:#f3f8ff;--muted:#b9cddd;--cyan:#7ee4f5;--gold:#ffd081}
 *{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;font:15px/1.45 system-ui,-apple-system,'Segoe UI',sans-serif;background:var(--bg);color:var(--txt);overscroll-behavior:none}[hidden]{display:none!important}
@@ -14,7 +14,7 @@ button{border:1px solid var(--line);border-radius:13px;background:#193248;color:
 #ui{position:fixed;inset:0;z-index:3;pointer-events:none}#ui button,#ui input,#ui a{pointer-events:auto}
 #landing{position:absolute;inset:0;background:radial-gradient(ellipse at 12% 7%,#194368 0,transparent 55%),radial-gradient(ellipse at 90% 90%,#292149 0,transparent 54%),#07111f;pointer-events:auto;z-index:50;display:flex;align-items:center;justify-content:center;padding:18px;overflow:auto}
 #intro{width:min(520px,100%);padding:25px;border-radius:24px;border:1px solid var(--line);background:rgba(5,13,24,.94);box-shadow:0 16px 90px #000a}.kicker{font-size:11px;font-weight:850;letter-spacing:.14em;color:var(--cyan)}h1{font-size:clamp(35px,7.9vw,55px);line-height:1.02;letter-spacing:-.06em;margin:12px 0 13px}#intro p{color:#cbdbed;font-size:14px}.orbit-art{display:flex;align-items:center;justify-content:center;gap:13px;margin:19px auto 22px}.orbit-art b{border-radius:50%;display:block;flex-shrink:0}.orbit-art .s{width:65px;height:65px;background:radial-gradient(circle at 35% 32%,#fff5cb 0,#efa544 48%,#a34b24 92%);box-shadow:0 0 42px #ffa25355}.orbit-art .e{width:43px;height:43px;background:radial-gradient(circle at 35% 32%,#aee8db,#1d7cc1 55%,#11315e 92%)}.orbit-art .m{width:26px;height:26px;background:radial-gradient(circle at 35% 32%,#ddd,#8f969b 53%,#414b55)}.orbit-art i{width:23px;height:1px;background:#7a9cb7}
-.start{display:grid;gap:9px}.start button{min-height:50px;font-size:14px;text-align:left;padding-left:17px}.small{font-size:12px!important;color:#adc2d5!important}.credit{font-size:11px;color:#c0d5e5;margin-top:18px;padding-top:13px;border-top:1px solid var(--line)}#launchStatus{font-size:12px;color:#ffe1ab;margin:10px 0 0;min-height:17px}
+.start{display:grid;gap:9px}.start button{min-height:50px;font-size:14px;text-align:left;padding-left:17px}.small{font-size:12px!important;color:#adc2d5!important}.credit{font-size:11px;color:#c0d5e5;margin-top:18px;padding-top:13px;border-top:1px solid var(--line)}
 #touchZone{position:absolute;inset:0;z-index:4;pointer-events:auto;touch-action:none;cursor:grab}#touchZone:active{cursor:grabbing}
 #header{position:absolute;top:max(env(safe-area-inset-top),9px);left:9px;right:9px;display:flex;align-items:flex-start;justify-content:space-between;gap:8px;z-index:11}#titleBadge{background:var(--glass);border:1px solid var(--line);border-radius:14px;padding:9px 12px;backdrop-filter:blur(7px);max-width:69%}#titleBadge strong{display:block;font-size:15px;line-height:1.2}#modeStatus{font-size:11px;color:var(--gold);margin-top:5px;line-height:1.3}#header button{background:var(--glass);font-size:11px;min-height:40px;padding:8px 10px}
 #placing{position:absolute;top:39%;left:50%;transform:translate(-50%,-50%);width:min(325px,84%);text-align:center;padding:15px 16px;background:var(--glass);border:1px solid #5e9eb3;border-radius:17px;z-index:12;pointer-events:auto}#placing strong{font-size:16px}#placing p{font-size:12px;color:#d1e2ed;margin:7px 0 8px;line-height:1.45}#placing button{width:100%;margin-top:6px}#placeTarget{font-size:28px;display:block;color:var(--cyan)}
@@ -39,6 +39,60 @@ button{border:1px solid var(--line);border-radius:13px;background:#193248;color:
 .projectAuthors .andSymbol{color:#ffd06c}
 .projectAuthors .classIdentity{display:block;padding:3px 13px;border-radius:20px;background:#285b75;color:#e3f9ff;font-size:12px;letter-spacing:.14em;font-weight:800}
 @media(max-height:720px){#intro{padding:16px}.schoolIdentity{padding:8px 6px}.projectAuthors{padding:7px;margin-bottom:12px}.orbit-art{margin:11px auto 14px}.schoolSpark{font-size:15px}}
+
+/* V7.1: collapse UI only. Camera, model transforms and animation are untouched. */
+#dock {
+  max-height:calc(100vh - 180px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+  max-height:calc(100dvh - 180px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+  overflow-y:auto;
+  overscroll-behavior:contain;
+  touch-action:pan-y;
+  pointer-events:auto;
+  scrollbar-width:thin;
+  scrollbar-color:#527b94 transparent;
+}
+#controlsToggle {
+  position:absolute;
+  right:max(12px,env(safe-area-inset-right),calc((100% - 710px) / 2));
+  bottom:calc(max(8px,env(safe-area-inset-bottom)) + var(--dock-toggle-lift,0px));
+  z-index:20;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:7px;
+  min-height:44px;
+  padding:10px 14px;
+  border:1px solid rgba(126,228,245,.85);
+  border-radius:999px;
+  background:rgba(10,28,43,.95);
+  color:#e6fbff;
+  box-shadow:0 3px 15px rgba(0,0,0,.32);
+  font-size:12px;
+  line-height:1.2;
+  touch-action:manipulation;
+  user-select:none;
+  -webkit-user-select:none;
+  pointer-events:auto;
+}
+#controlsToggle svg { width:19px;height:19px;flex-shrink:0;pointer-events:none; }
+#controlsToggle span { pointer-events:none; }
+#controlsToggle[aria-expanded="true"] svg { transform:rotate(180deg); }
+#controlsToggle:active { background:#214962; }
+body.controls-collapsed #controlsToggle {
+  right:max(12px,env(safe-area-inset-right));
+  border-color:rgba(126,228,245,.75);
+  background:rgba(7,23,36,.86);
+}
+
+/* V7.2: the opening card has no status/debug paragraph. */
+#toast.welcome-notice {
+ z-index:55;
+ top:auto;
+ bottom:calc(16px + env(safe-area-inset-bottom));
+ pointer-events:auto;
+ cursor:pointer;
+ box-shadow:0 4px 24px rgba(0,0,0,.4);
+}
 </style>
 </head>
 <body>
@@ -47,22 +101,24 @@ button{border:1px solid var(--line);border-radius:13px;background:#193248;color:
 <div id="ui">
  <section id="landing"><div id="intro">
   <div class="schoolIdentity"><span class="schoolSpark">✦</span><div>MONTFORT ACADEMY<span>HIGHER SECONDARY SCHOOL</span></div><span class="schoolSpark">✦</span></div>
-  <div class="kicker" style="margin-top:18px">V STANDARD · SCIENCE EXHIBITION · VERSION 7</div>
+  <div class="kicker" style="margin-top:18px">V STANDARD · SCIENCE EXHIBITION · VERSION 7.2</div>
   <h1>Hold an eclipse<br>in your hands.</h1>
   <p>Explore the Sun, Earth and Moon in 3D. Zoom, rotate, create eclipses and watch two young astronauts jump and wave beside the Moon!</p>
   <div class="orbit-art" aria-hidden="true"><b class="s"></b><i></i><b class="m"></b><i></i><b class="e"></b></div>
   <div class="projectAuthors"><span class="authorsLabel">PROJECT PRESENTED BY</span><strong>S. KAVIN ABISHVA <span class="andSymbol">&amp;</span> S. HASHVANTH</strong><span class="classIdentity">V STD · “A” SEC</span></div>
   <div class="start"><button class="primary" id="startCamera">📷 Camera effect — tap anywhere to place</button><button id="startWorld">🌍 True table AR — supported Android phones</button><button id="startPreview">✋ Interactive 3D — without camera</button></div>
-  <div id="launchStatus">Checking Android AR capability...</div>
-  <p class="small">No Hiro marker needed. The names and school appear on this opening page only, leaving the eclipse viewing area clear. True table AR requires ARCore/WebXR.</p>
 </div></section>
  <div id="touchZone" hidden aria-label="Drag to rotate; pinch to zoom; tap to place in camera mode"></div>
  <div id="header" hidden><div id="titleBadge"><div class="kicker">ECLIPSE EXPLORER</div><strong>Solar &amp; Lunar Eclipse</strong><div id="modeStatus" role="status">Ready</div></div><div style="display:flex;gap:6px"><button id="changeMode">Modes</button><button id="openHelp">?</button></div></div>
  <div id="surfaceStatus" hidden aria-live="polite">Preparing 3D planets…</div>
  <div id="placing" hidden><span id="placeTarget">◎</span><strong id="placeTitle">Tap to place</strong><p id="placeText">Tap anywhere on the camera view to position your eclipse model.</p><button id="placeBtn" class="primary" hidden disabled>Place model here</button></div>
  <div id="dock" hidden><div id="modes"><button id="solar" class="solar selected">☀ Solar eclipse</button><button id="lunar" class="lunar">🌕 Lunar eclipse</button></div><div id="explain" class="tip">Solar eclipse: Moon between Sun and Earth.</div><div class="controls"><button id="left">↶ Rotate</button><button id="right">Rotate ↷</button><button id="zoomOut">− Zoom</button><button id="zoomIn">+ Zoom</button><button id="reset">↺ Reset</button></div><div class="controls2"><button id="play">▶ Play orbit</button><button id="kidsToggle" title="Toggle astronaut dance">🎉 Kids: PLAYING</button><button id="reposition" hidden>📍 Move position</button><button id="earthView">🌍 Earth</button><button id="sunView">☀ Sun</button><button id="moonView">🌕 Moon</button></div><label class="slider">Move Moon <input id="moonAngle" type="range" min="0" max="360" value="180" step="1"><span id="angle">180°</span></label><div class="controlHint">Drag = rotate · Pinch = zoom · Move position = place again</div></div>
+ <button id="controlsToggle" type="button" hidden aria-controls="dock header surfaceStatus" aria-expanded="true" aria-label="Hide controls for a clear view" title="Hide controls for a clear view">
+  <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 15l6-6 6 6" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  <span id="controlsToggleText">Hide controls</span>
+ </button>
  <div id="toast" hidden role="alert"></div>
- <div id="help" hidden><article><button id="closeHelp">Close</button><h2>How to use</h2><ul><li><b>Camera effect:</b> Allow camera permission, then tap any spot to place the model on your screen. Rotate and zoom it. This is a screen-aligned camera overlay, not real table tracking.</li><li><b>True table AR:</b> Needs a supported Android phone with ARCore, Chrome and WebXR hit-test. Move camera over a table until the ring appears, then tap Place.</li><li><b>3D:</b> Works without camera. One finger rotates, two fingers pinch, and +/− buttons zoom. Use Move Moon to control eclipses.</li><li><b>All modes:</b> The school and student names appear on the welcome page only and never cover the planets. The astronaut faces use original photographs embedded directly in this publicly hosted HTML. Solar/Lunar choose an alignment. Press Play orbit only when you want motion. Use Earth/Sun/Moon buttons for a close-up.</li></ul><p>Scientific note: Sizes and distances are not to scale; eclipse shadows and lunar reddening are illustrative. Sun surface is a detailed computer-generated solar texture; Earth/Moon are mapped with astronomical imagery when loaded.</p><p>Camera footage remains on your phone and is not uploaded by this webpage.</p><p><small>Version 7.0 · Brighter Earth · Clean eclipse view · Real-photo astronaut faces</small></p></article></div>
+ <div id="help" hidden><article><button id="closeHelp">Close</button><h2>How to use</h2><ul><li><b>Hide / show controls:</b> Tap the down-arrow Hide controls button above the options. The bottom panel and top information labels disappear, leaving only a small up-arrow Controls button at the bottom-right. Tap it to show all options again. Drag and pinch still work while controls are hidden; the model position, zoom, orbit and astronaut animations are not reset. Placement instructions and important alerts can still appear when needed.</li><li><b>Camera effect:</b> Allow camera permission, then tap any spot to place the model on your screen. Rotate and zoom it. This is a screen-aligned camera overlay, not real table tracking.</li><li><b>True table AR:</b> Needs a supported Android phone with ARCore, Chrome and WebXR hit-test. Move camera over a table until the ring appears, then tap Place.</li><li><b>3D:</b> Works without camera. One finger rotates, two fingers pinch, and +/− buttons zoom. Use Move Moon to control eclipses.</li><li><b>All modes:</b> The school and student names appear on the welcome page only and never cover the planets. The astronaut faces use original photographs embedded directly in this publicly hosted HTML. Solar/Lunar choose an alignment. Press Play orbit only when you want motion. Use Earth/Sun/Moon buttons for a close-up.</li></ul><p>Scientific note: Sizes and distances are not to scale; eclipse shadows and lunar reddening are illustrative. Sun surface is a detailed computer-generated solar texture; Earth/Moon are mapped with astronomical imagery when loaded.</p><p>Camera footage remains on your phone and is not uploaded by this webpage.</p><p><small>Version 7.2 · Hide / show controls · Brighter Earth · Real-photo astronaut faces</small></p></article></div>
 </div>
 <script type="module">
 const $=id=>document.getElementById(id),clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
@@ -70,10 +126,58 @@ const S={scene:null,cam:null,renderer:null,root:null,model:null,sun:null,earth:n
 let THREE;
 const source={earth:['https://svs.gsfc.nasa.gov/vis/a000000/a002900/a002915/bluemarble-2048.png','https://cdn.jsdelivr.net/gh/mrdoob/three.js@r160/examples/textures/planets/earth_atmos_2048.jpg','https://threejs.org/examples/textures/planets/earth_atmos_2048.jpg'],moon:['https://svs.gsfc.nasa.gov/vis/a000000/a004700/a004720/lroc_color_2k.jpg','https://raw.githubusercontent.com/mrdoob/three.js/r160/examples/textures/planets/moon_1024.jpg','https://threejs.org/examples/textures/planets/moon_1024.jpg']};
 function say(id,t){$(id).textContent=t;}
-function notice(t,ms=5700){if(!$('landing').hidden){say('launchStatus',t);return;}const el=$('toast');say('toast',t);el.hidden=false;clearTimeout(S.toastTimer);S.toastTimer=setTimeout(()=>el.hidden=true,ms);}
+function notice(t,ms=5700){
+ let message=String(t||'');
+ const libraryError=/3D library could not load|Failed to fetch dynamically imported module|Importing a module script failed|error loading dynamically imported module|unpkg\.com\/three|cdn\.jsdelivr\.net\/npm\/three/i;
+ if(libraryError.test(message)) message='Unable to open the 3D scene. Check your internet connection and try again.';
+ const el=$('toast');
+ const onWelcome=!$('landing').hidden;
+ el.classList.toggle('welcome-notice',onWelcome);
+ el.title=onWelcome?'Tap to dismiss':'';
+ say('toast',message);
+ el.hidden=false;
+ clearTimeout(S.toastTimer);
+ S.toastTimer=setTimeout(()=>el.hidden=true,ms);
+}
+// Technical details are not printed on the opening page. A real launch failure
+// still gets a temporary, plain-language message which can be dismissed.
+$('toast').addEventListener('click',()=>{
+ if($('toast').classList.contains('welcome-notice')){
+  clearTimeout(S.toastTimer);$('toast').hidden=true;
+ }
+});
 function cssView(v){document.body.classList.toggle('camera',v==='camera');document.body.classList.toggle('xr',v==='xr');}
 function isVisible(id){return !$(id).hidden;}
-function startScreen(){ $('landing').hidden=true;$('header').hidden=false;$('dock').hidden=false;$('touchZone').hidden=false;$('surfaceStatus').hidden=false; }
+// Small, persistent handle OUTSIDE the dock, so it can reopen the hidden dock.
+const controlsUI={collapsed:false};
+function positionControlsToggle(){
+ const dock=$('dock');
+ const lift=dock.hidden?0:Math.ceil(dock.getBoundingClientRect().height)+8;
+ $('controlsToggle').style.setProperty('--dock-toggle-lift',lift+'px');
+}
+function setControlsCollapsed(collapsed,focusHandle=false){
+ controlsUI.collapsed=Boolean(collapsed);
+ const active=S.view!=='none'&&$('landing').hidden;
+ document.body.classList.toggle('controls-collapsed',active&&controlsUI.collapsed);
+ for(const id of ['dock','header','surfaceStatus']) $(id).hidden=!active||controlsUI.collapsed;
+ const handle=$('controlsToggle');
+ handle.hidden=!active;
+ handle.setAttribute('aria-expanded',String(!controlsUI.collapsed));
+ const label=controlsUI.collapsed?'Show controls':'Hide controls for a clear view';
+ handle.setAttribute('aria-label',label);
+ handle.title=label;
+ say('controlsToggleText',controlsUI.collapsed?'Controls':'Hide controls');
+ // Dismiss an already displayed tip instead of leaving it over the model.
+ // Future placement prompts or errors remain available.
+ if(controlsUI.collapsed){clearTimeout(S.toastTimer);$('toast').hidden=true;}
+ positionControlsToggle();
+ if(focusHandle&&active) handle.focus({preventScroll:true});
+}
+function startScreen(){
+ $('landing').hidden=true;$('touchZone').hidden=false;
+ setControlsCollapsed(false);
+}
+
 function setBusy(v){['startCamera','startWorld','startPreview'].forEach(id=>$(id).disabled=v);}
 // Banded turbulence, granules and sunspots: a photographic-inspired simulated solar surface.
 function solarTexture(){const c=document.createElement('canvas');c.width=896;c.height=448;const ctx=c.getContext('2d'),img=ctx.createImageData(c.width,c.height);const data=img.data,W=c.width,H=c.height;
@@ -283,7 +387,7 @@ async function enterXR(){closeStream();await initialize();const ok=await support
 function placeXR(){if(S.view!=='xr'||S.placed||!S.hitReady||!S.reticle.visible)return;const p=new THREE.Vector3(),q=new THREE.Quaternion(),scale=new THREE.Vector3();S.reticle.matrix.decompose(p,q,scale);S.root.position.copy(p);S.root.position.y+=.16;S.root.visible=true;S.placed=true;S.reticle.visible=false;$('placing').hidden=true;$('reposition').hidden=false;say('modeStatus','True table AR · drag to rotate, pinch to zoom');}
 function reposition(){if(S.view==='camera'){S.placed=false;S.root.visible=false;$('placing').hidden=false;$('placeBtn').hidden=false;$('placeBtn').disabled=false;say('placeBtn','Place at centre');say('placeTitle','Tap anywhere to place');say('placeText','Tap an open area or choose Place at centre.');}else if(S.view==='xr'){S.placed=false;S.hitReady=false;S.root.visible=false;S.reticle.visible=false;$('placing').hidden=false;$('placeBtn').disabled=true;say('placeText','Slowly move phone toward a flat table.');}}
 async function leaveXR(){if(S.xrSession){const old=S.xrSession;S.xrSession=null;try{await old.end();}catch(e){}}}
-function closeToHome(){leaveXR();closeStream();S.view='none';cssView('none');$('landing').hidden=false;$('header').hidden=true;$('dock').hidden=true;$('touchZone').hidden=true;$('placing').hidden=true;$('surfaceStatus').hidden=true;}
+function closeToHome(){leaveXR();closeStream();S.view='none';cssView('none');$('landing').hidden=false;$('touchZone').hidden=true;$('placing').hidden=true;clearTimeout(S.toastTimer);$('toast').hidden=true;setControlsCollapsed(false);}
 // Pointer interactions work in preview, camera overlay AND placed true AR.
 const touches=new Map();let lastPinch=0,wasTap=false;
 $('touchZone').addEventListener('pointerdown',e=>{e.preventDefault();if(S.view==='xr'&&!S.placed)return;try{$('touchZone').setPointerCapture(e.pointerId);}catch(err){}touches.set(e.pointerId,{x:e.clientX,y:e.clientY,sx:e.clientX,sy:e.clientY,moved:false});lastPinch=0;wasTap=touches.size===1;});
@@ -300,8 +404,31 @@ $('play').addEventListener('click',()=>{S.playing=!S.playing;updateUI();});$('ki
 $('moonAngle').addEventListener('input',e=>{S.theta=Number(e.target.value)*Math.PI/180;S.playing=false;updateMoon();updateUI();});
 function focus(name){let obj=S[name];if(!obj)return;S.playing=false;S.model.position.copy(obj.position).multiplyScalar(-1);S.zoom=clamp(name==='sun'?2.4:name==='earth'?2.9:4.3,.4,4.5);S.yaw=.1;S.pitch=.04;apply();updateUI();notice((name==='sun'?'Sun':name==='earth'?'Earth':'Moon')+' close-up. Use Reset to see the full eclipse again.',3800);}
 $('sunView').addEventListener('click',()=>focus('sun'));$('earthView').addEventListener('click',()=>focus('earth'));$('moonView').addEventListener('click',()=>focus('moon'));
-// Clear splash support note; never pretend to have ARCore on unsupported phones.
-support().then(ok=>say('launchStatus',ok?'✓ True table AR available on this browser.':'Camera effect and Interactive 3D available. True table AR depends on your Android model.'));
+
+// Show/hide is UI-only: never call reset(), zoom(), placeXR() or restart the scene.
+$('controlsToggle').addEventListener('click',e=>{
+ e.stopPropagation();
+ setControlsCollapsed(!controlsUI.collapsed,true);
+});
+for(const event of ['pointerdown','pointerup','pointercancel']){
+ $('controlsToggle').addEventListener(event,e=>e.stopPropagation());
+}
+// Prevent a click on a DOM control from also placing the model in immersive AR.
+for(const id of ['controlsToggle','dock','header','placing','help']){
+ $(id).addEventListener('beforexrselect',e=>e.preventDefault());
+}
+// Follow the actual dock height, including line wrapping and landscape mode.
+if('ResizeObserver' in window){
+ const dockSizeObserver=new ResizeObserver(positionControlsToggle);
+ dockSizeObserver.observe($('dock'));
+}
+window.addEventListener('resize',positionControlsToggle);
+window.addEventListener('orientationchange',positionControlsToggle);
+window.visualViewport?.addEventListener('resize',positionControlsToggle);
+positionControlsToggle();
+
+// Check support silently. The AR button still validates support before launch.
+support();
 </script>
 </body>
 </html>
